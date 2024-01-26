@@ -1,0 +1,205 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@*<div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"> <b>Reporte de Ventas: 3 Ultimos Meses</b> </div>
+
+                <div class="panel-body">
+                    <canvas id="myBarrasChart" width="100" height="50"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"> <b>Reporte de Ventas: 3 Ultimos Meses</b> </div>
+
+                <div class="panel-body">
+                    <canvas id="myPastelChart" width="100" height="50"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<div class="row" style="margin-top: 20px">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><b>Reporte de Ventas: 3 Ultimos Meses</b></div>
+            <div class="card-body">
+                <canvas id="myBarrasChart" style="width: 100px; height: 50px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><b>Reporte de Ventas: 3 Ultimos Meses</b></div>
+            <div class="card-body">
+                <canvas id="myPastelChart" style="width: 100px; height: 50px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+
+    //    var controlBarras = document.getElementById("myBarrasChart");
+
+        //var graficoBarrras = new Chart(controlBarras, {
+        //    type: 'bar',
+        //    data: {
+        //        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio"],
+        //        datasets: [
+        //            {
+        //                label: "reportes",
+        //                backgroundColor: "#BB2100",  /*color de fondo de las barras*/
+        //                data: [4215, 5312, 6251, 7841, 9821, 14984] /*Estos valores deben coincidir con los labels */
+        //            }
+        //        ]
+        //    },
+        //    options: {
+        //        scales: {
+        //            x: [{
+        //                gridLines: {
+        //                    display:true
+        //                }
+        //            }],
+        //            y: [{
+        //                gridLines: {
+        //                    display:true
+        //                }
+        //            }]
+        //        }
+        //    }
+        //})
+
+       //var controlPastel = document.getElementById("myPastelChart");
+
+        //var graficoPastel = new Chart(controlPastel, {
+        //  /*  type: 'pie',*/
+        //    type: 'doughnut',
+        //    data: {
+        //        labels: ["Azul", "Rojo", "Amarillo", "Verde"],
+        //        datasets: [{
+        //            label: "colores",
+        //            data: [12.21, 15.58, 11.25, 8.32], /*Estos valores deben coincidir con los labels */
+        //            backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
+        //        }],
+        //    },
+        //});
+
+        jQuery.ajax({
+                url: '@Url.Action("ReporteVentas", "Home")',
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    /*console.log(data);*/
+
+                    var arrayMeses = [];
+                    var arrayCantidad = [];
+
+                    for (var i = 0; i < data.length; i++) {
+
+                        /*console.log(data[i].mes)*/
+                        arrayMeses.push(data[i].mes)
+                        arrayCantidad.push(data[i].cantidad)
+                    }
+
+                    console.log(arrayMeses)
+                    console.log(arrayCantidad)
+
+                    var controlBar1 = document.getElementById("myBarrasChart");
+
+                    var graficoBar1 = new Chart(controlBar1, {
+                        type: 'bar',
+                        data: {
+                            labels: arrayMeses,
+                            datasets: [{
+                                label: "Total Ventas",
+                                /*backgroundColor: "#0800B1",*/
+                                backgroundColor: ["#03B100", "#0083B1", "#0800B1"],
+                                borderColor: "#000000",
+                                borderWidth: 0,
+                                data: arrayCantidad,
+                            }],
+                        },
+                        options: {
+                            scales: {
+                                xAxes: [{
+                                    gridLines: {
+                                        display: true
+                                    },
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        min: 0,
+                                    },
+                                    gridLines: {
+                                        display: true
+                                    }
+                                }],
+                            },
+                            legend: {
+                                display: true
+                            }
+                        }
+                    });
+
+
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+        });
+
+
+
+        jQuery.ajax({
+        url: '@Url.Action("ReporteProductos", "Home")',
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {
+
+            /*console.log(data);*/
+
+            var arrayProducto = [];
+            var arrayCantidad = [];
+
+            for (var i = 0; i < data.length; i++) {
+
+                /*console.log(data[i].mes)*/
+                arrayProducto.push(data[i].producto)
+                arrayCantidad.push(data[i].cantidad)
+            }
+
+            console.log(arrayProducto)
+            console.log(arrayCantidad)
+
+            var controlPastel = document.getElementById("myPastelChart");
+
+            var graficoPastel = new Chart(controlPastel, {
+              /*  type: 'pie',*/
+                type: 'doughnut',
+                data: {
+                    labels: arrayProducto,
+                    datasets: [{
+                        data: arrayCantidad,
+                        backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
+                    }],
+                },
+            });
+
+
+        },
+        error: function (error) {
+            console.log(error)
+        }
+});
+
+    </script>
+}
